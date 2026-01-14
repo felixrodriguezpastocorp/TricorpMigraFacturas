@@ -1,0 +1,10 @@
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.csproj.AssemblyReference.cache
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.frmPrincipal.resources
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.Properties.Resources.resources
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.csproj.GenerateResource.cache
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.csproj.CoreCompileInputs.cache
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\bin\Debug\TricorpMigraFacturas.exe.config
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\bin\Debug\TricorpMigraFacturas.exe
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\bin\Debug\TricorpMigraFacturas.pdb
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.exe
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\obj\Debug\TricorpMigraFacturas.pdb

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32602.291
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TricorpMigraFacturas", "TricorpMigraFacturas\TricorpMigraFacturas.csproj", "{59E15D98-7F75-4EA6-9588-22702AE18233}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TricorpMigraFacturasTask", "TricorpMigraFacturasTask\TricorpMigraFacturasTask.csproj", "{EBEE8A73-93D8-47E6-907F-F6511F37DDEA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59E15D98-7F75-4EA6-9588-22702AE18233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59E15D98-7F75-4EA6-9588-22702AE18233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59E15D98-7F75-4EA6-9588-22702AE18233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59E15D98-7F75-4EA6-9588-22702AE18233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBEE8A73-93D8-47E6-907F-F6511F37DDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBEE8A73-93D8-47E6-907F-F6511F37DDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBEE8A73-93D8-47E6-907F-F6511F37DDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBEE8A73-93D8-47E6-907F-F6511F37DDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6AC1DE99-2EA7-4FAA-BC77-3667C587A061}
+	EndGlobalSection
+EndGlobal

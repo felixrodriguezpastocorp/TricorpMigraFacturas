@@ -1,0 +1,8 @@
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\bin\Debug\TricorpMigraFacturasTask.exe.config
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\bin\Debug\TricorpMigraFacturasTask.exe
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturas\bin\Debug\TricorpMigraFacturasTask.pdb
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.csproj.AssemblyReference.cache
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.csproj.CoreCompileInputs.cache
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.csproj.CopyComplete
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.exe
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.pdb

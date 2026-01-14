@@ -1,0 +1,3 @@
+14/01/2026 01:12:04 a. m. <Inicia proceso archivo D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\MigraFacturas.xlsx>
+14/01/2026 01:12:04 a. m. <Cargando archivo D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\MigraFacturas.xlsx>
+14/01/2026 01:12:06 a. m. <Termina proceso archivo D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\MigraFacturas.xlsx>
