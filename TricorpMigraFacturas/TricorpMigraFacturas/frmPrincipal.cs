@@ -128,6 +128,7 @@ namespace TricorpMigraFacturas
             string pass = ConfigurationManager.AppSettings["sqlPass"];
             string sdkUser = ConfigurationManager.AppSettings["usuarioSDK"];
             string sdkPass = ConfigurationManager.AppSettings["passSDK"];
+            string relacionaADD = ConfigurationManager.AppSettings["relacionaADD"];
             string rutaEmpresaOrigen = gEmpresasOrigen[cbEmpresasOrigen.SelectedIndex + 1].rutaempresa;
             string rutaEmpresaDestino = gEmpresasDestino[cbEmpresasDestino.SelectedIndex + 1].rutaempresa;
 
@@ -139,7 +140,7 @@ namespace TricorpMigraFacturas
             string stringconnectionDestino;
             stringconnectionDestino = "server=" + server + "; database=" + bddDestino + "; User Id =" + user + "; Password = " + pass + ";";
 
-            string valores = $"{sdkUser},{sdkPass},{rutaEmpresaOrigen},{rutaEmpresaDestino},{tbArchivo.Text},{stringconnectionOrigen},{stringconnectionDestino}";
+            string valores = $"{sdkUser},{sdkPass},{rutaEmpresaOrigen},{rutaEmpresaDestino},{tbArchivo.Text},{stringconnectionOrigen},{stringconnectionDestino},{relacionaADD},{server},{user},{pass}";
             var bytesText = System.Text.Encoding.UTF8.GetBytes(valores);
             string parameters = System.Convert.ToBase64String(bytesText);
 

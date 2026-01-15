@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -80,8 +81,7 @@ namespace TricorpMigraFacturasTask
             }
         }
 
-        /*
-        public static int fCreaEntrada(List<Interfaces.registro> aRegistros, string aConcepto)
+        public static int fCreaDocumento(Interfaces.documento aDocumento, Dictionary<string,string> aUnidades, string aStringConnection, string aRelacionarADD, string sqlServer, string sqlUser, string sqlPass)
         {
             int lError = 0;
             double lSiguienteFolio = 0.00;
@@ -91,7 +91,7 @@ namespace TricorpMigraFacturasTask
 
             try
             {
-                lError = Interfaces.fSiguienteFolio(aConcepto, "SYNC", ref lSiguienteFolio);
+                lError = Interfaces.fSiguienteFolio(aDocumento.concepto, aDocumento.serie, ref lSiguienteFolio);
                 if (lError != 0)
                 {
                     Log.LogMessage("Error al obtener siguiente folio: " + Interfaces.RError(lError));
@@ -101,11 +101,38 @@ namespace TricorpMigraFacturasTask
                 Interfaces.tDocumento ltDocumento = new Interfaces.tDocumento();
 
                 ltDocumento.aFolio = lSiguienteFolio;
+                ltDocumento.aNumMoneda = Convert.ToInt32(aDocumento.moneda);
+                ltDocumento.aTipoCambio = Convert.ToDouble(aDocumento.tc);
+                if (Convert.ToDouble(aDocumento.descuentodoc1) > 0)
+                {
+                    ltDocumento.aDescuentoDoc1 = Convert.ToDouble(aDocumento.descuentodoc1);
+                }
+                if (Convert.ToDouble(aDocumento.descuentodoc2) > 0)
+                {
+                    ltDocumento.aDescuentoDoc2 = Convert.ToDouble(aDocumento.descuentodoc2);
+                }
                 ltDocumento.aSistemaOrigen = 205;
-                ltDocumento.aCodConcepto = aConcepto;
-                ltDocumento.aSerie = "SYNC";
+                ltDocumento.aCodConcepto = aDocumento.concepto;
+                ltDocumento.aSerie = aDocumento.serie;
                 ltDocumento.aFecha = DateTime.Now.ToString("MM/dd/yyyy");
+                ltDocumento.aCodigoCteProv = aDocumento.cliente;
+                if (!string.IsNullOrWhiteSpace(aDocumento.referencia))
+                {
+                    ltDocumento.aReferencia = aDocumento.referencia;
+                }
                 ltDocumento.aAfecta = 1;
+                if (Convert.ToDouble(aDocumento.gasto1) > 0)
+                {
+                    ltDocumento.aGasto1 = Convert.ToDouble(aDocumento.gasto1);
+                }
+                if (Convert.ToDouble(aDocumento.gasto2) > 0)
+                {
+                    ltDocumento.aGasto2 = Convert.ToDouble(aDocumento.gasto2);
+                }
+                if (Convert.ToDouble(aDocumento.gasto3) > 0)
+                {
+                    ltDocumento.aGasto3 = Convert.ToDouble(aDocumento.gasto3);
+                }
 
                 lError = Interfaces.fAltaDocumento(ref lIdDocumento, ref ltDocumento);
 
@@ -115,10 +142,24 @@ namespace TricorpMigraFacturasTask
                     return lError;
                 }
 
+                if (!string.IsNullOrWhiteSpace(aDocumento.observaciones))
+                {
+                    lError = Interfaces.fEditarDocumento();
+                    if (lError == 0) lError = Interfaces.fSetDatoDocumento("cObservaciones", aDocumento.observaciones);
+                    if (lError == 0) lError = Interfaces.fGuardaDocumento();
+                }
+
+                if (lError != 0)
+                {
+                    Log.LogMessage("Error al actualizar documento: " + Interfaces.RError(lError));
+                    Interfaces.fDesbloqueaDocumento();
+                    fBorrarDocumento(lIdDocumento);
+                    return lError;
+                }
 
                 int lNumMovimiento = 0;
 
-                foreach (Interfaces.registro lMovimiento in aRegistros)
+                foreach (Interfaces.movimiento lMovimiento in aDocumento.movimientos)
                 {
                     //lError = Interfaces.fBuscaProducto(lMovimiento.producto);
 
@@ -136,83 +177,171 @@ namespace TricorpMigraFacturasTask
                     lNumMovimiento = lNumMovimiento + 1;
 
                     ltMovimiento.aConsecutivo = lNumMovimiento;
-                    ltMovimiento.aUnidades = Convert.ToDouble(lMovimiento.cantidad);
-                    ltMovimiento.aCosto = Convert.ToDouble(lMovimiento.costo);
-                    ltMovimiento.aCodProdSer = lMovimiento.producto;
-                    ltMovimiento.aCodAlmacen = lMovimiento.almacen;
+                    ltMovimiento.aUnidades = Convert.ToDouble(lMovimiento.unidades);
+                    ltMovimiento.aPrecio = Convert.ToDouble(lMovimiento.precio);
+                    ltMovimiento.aCodProdSer = "SER001";
+                    ltMovimiento.aCodAlmacen = "MKLOG";
+                    if (!string.IsNullOrWhiteSpace(lMovimiento.referencia))
+                    {
+                        ltMovimiento.aReferencia = lMovimiento.referencia;
+                    }
 
                     lError = Interfaces.fAltaMovimiento(lIdDocumento, ref lIdMovimiento, ref ltMovimiento);
 
                     if (lError != 0)
                     {
-                        Log.LogMessage("Error al agregar movimiento Producto:" + lMovimiento.producto + " Cantidad:" + lMovimiento.cantidad + " : " + Interfaces.RError(lError));
+                        Log.LogMessage("Error al agregar movimiento : " + Interfaces.RError(lError));
                         Interfaces.fDesbloqueaDocumento();
                         fBorrarDocumento(lIdDocumento);
                         return lError;
                     }
-
-                    bool lUnidades = false;
-                    bool lSerie = false;
-                    bool lLote = false;
-                    bool lPedimento = false;
-                    bool lCaracteristicas = false;
-
-                    lError = Interfaces.fRecuperaTipoProducto(ref lUnidades, ref lSerie, ref lLote, ref lPedimento, ref lCaracteristicas);
-
-                    if (lError != 0)
+                    string lUnidad = "";
+                    string lIdUnidad = "";
+                    if (!string.IsNullOrWhiteSpace(lMovimiento.unidad))
                     {
-                        Log.LogMessage("Error al buscar tipo de producto Producto:" + lMovimiento.producto + " : " + Interfaces.RError(lError));
-                        Interfaces.fDesbloqueaDocumento();
-                        fBorrarDocumento(lIdDocumento);
-                        return lError;
-                    }
-
-                    if (!lLote)
-                    {
-                        Log.LogMessage("El Producto:" + lMovimiento.producto + " no maneja lotes : " + Interfaces.RError(lError));
-                        Interfaces.fDesbloqueaDocumento();
-                        fBorrarDocumento(lIdDocumento);
-                        return lError;
-                    }
-                    else
-                    {
-                        Interfaces.tSeriesCapas ltSeriesCapas = new Interfaces.tSeriesCapas();
-
-                        ltSeriesCapas.aUnidades = Convert.ToDouble(lMovimiento.cantidad);
-                        ltSeriesCapas.aTipoCambio = 1;
-                        ltSeriesCapas.aSeries = "";
-                        ltSeriesCapas.aPedimento = "";
-                        ltSeriesCapas.aAgencia = "";
-                        ltSeriesCapas.aFechaPedimento = "";
-                        ltSeriesCapas.aNumeroLote = lMovimiento.lote;
-                        ltSeriesCapas.aFechaFabricacion = Convert.ToDateTime(lMovimiento.fabricacion).ToString("MM/dd/yyyy");
-                        ltSeriesCapas.aFechaCaducidad = Convert.ToDateTime(lMovimiento.caducidad).ToString("MM/dd/yyyy");
-
-                        lError = Interfaces.fAltaMovimientoSeriesCapas(lIdMovimiento, ref ltSeriesCapas);
-
-                        if (lError != 0)
+                        lUnidad = aUnidades[lMovimiento.unidad];
+                        lMensaje = "";
+                        if (SqlConnections.BuscarIdUnidad(aStringConnection, ref lMensaje, lUnidad, ref lIdUnidad) == false)
                         {
-                            Log.LogMessage("Error al agregar lote al movimiento Producto :" + lMovimiento.producto + " Cantidad:" + lMovimiento.cantidad + " : " + Interfaces.RError(lError));
+                            Log.LogMessage("Error al buscar unidad de medida " + lUnidad + " : " + Interfaces.RError(lError));
                             Interfaces.fDesbloqueaDocumento();
                             fBorrarDocumento(lIdDocumento);
                             return lError;
                         }
+                    }
 
+                    lError = Interfaces.fEditarMovimiento();
+                    if (lError == 0 && !string.IsNullOrWhiteSpace(lIdUnidad)) lError = Interfaces.fSetDatoMovimiento("cIdUnidad", lIdUnidad);
+                    if (lError == 0 && !string.IsNullOrWhiteSpace(lIdUnidad)) lError = Interfaces.fSetDatoMovimiento("cPrecio", lMovimiento.precio);
+                    if (lError == 0 && !string.IsNullOrWhiteSpace(lIdUnidad)) lError = Interfaces.fSetDatoMovimiento("cPrecioCapturado", lMovimiento.precio) ;
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcimp1) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeImpuesto1", lMovimiento.porcimp1);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcimp2) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeImpuesto2", lMovimiento.porcimp2);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcimp3) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeImpuesto3", lMovimiento.porcimp3);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcret1) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeRetencion1", lMovimiento.porcret1);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcret2) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeRetencion2", lMovimiento.porcret2);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcdes1) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeDescuento1", lMovimiento.porcdes1);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcdes2) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeDescuento2", lMovimiento.porcdes2);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcdes3) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeDescuento3", lMovimiento.porcdes3);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcdes4) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeDescuento4", lMovimiento.porcdes4);
+                    if (lError == 0 && Convert.ToDouble(lMovimiento.porcdes5) > 0) lError = Interfaces.fSetDatoMovimiento("cPorcentajeDescuento5", lMovimiento.porcdes5);
+                    if (lError == 0 && !string.IsNullOrWhiteSpace(lMovimiento.observacioens)) lError = Interfaces.fSetDatoMovimiento("cObervaMov", lMovimiento.observacioens);
+                    if (lError == 0) lError = Interfaces.fGuardaMovimiento();
+
+                    if (lError != 0)
+                    {
+                        Log.LogMessage("Error al actualizar movimiento : " + Interfaces.RError(lError));
+                        Interfaces.fDesbloqueaDocumento();
+                        fBorrarDocumento(lIdDocumento);
+                        return lError;
                     }
                 }
 
                 Interfaces.fDesbloqueaDocumento();
 
+
+                if (lError == 0)
+                {
+                    if (aRelacionarADD == "1")
+                    {
+                        string lStringConnectionADD = "";
+                        string lGuidDSL = "";
+
+                        if (SqlConnections.ObtenerGUIDDSL(aStringConnection, ref lMensaje, ref lGuidDSL) == false)
+                        {
+                            Log.LogMessage("Error al obtener el ADD  de la empresa: " + lMensaje);
+                            return -1;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(lGuidDSL))
+                        {
+                            lStringConnectionADD = "server=" + sqlServer + "; database=document_" + lGuidDSL + "_metadata" + "; User Id =" + sqlUser + "; Password = " + sqlPass + ";"; ;
+                            //foreach (documento lDocumento in gDocumentos)
+                            //{
+                                string lGuidDocumentoComercial = "";
+                                string lIdDocumentoComercial = "";
+
+                            if (SqlConnections.buscaUUID(aStringConnection, aDocumento.uuid))
+                            {
+                                Log.LogMessage("El UUID " + aDocumento.uuid + " ya fue procesado anteriormente");
+                                return -1;
+                            }
+
+                            if (SqlConnections.ObtenerGuidDocumentoComercial(aStringConnection, ref lMensaje, ref lGuidDocumentoComercial, ref lIdDocumentoComercial, aDocumento.concepto, aDocumento.serie, lSiguienteFolio.ToString()) == false)
+                                {
+                                    Log.LogMessage("Error al obtener GUID documento comercial : Concepto: " + aDocumento.concepto + " Serie: " + aDocumento.serie + " Folio" +lSiguienteFolio.ToString() + " " + lMensaje);
+                                    return -1;
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(lGuidDocumentoComercial))
+                                {
+                                    string lGUIDDocumentoDSL = "";
+
+                                    if (SqlConnections.ObtenerGuidDocumentoDSL(lStringConnectionADD, ref lMensaje, aDocumento.uuid, ref lGUIDDocumentoDSL) == false)
+                                    {
+                                        Log.LogMessage("Error al obtener GUID de documento ADD : " + aDocumento.uuid + " " + lMensaje);
+                                        return -1;
+                                    }
+
+                                    if (!string.IsNullOrWhiteSpace(lGUIDDocumentoDSL))
+                                    {
+                                        var options = new RestClientOptions("http://127.0.0.1:9080");
+                                        var client = new RestClient(options);
+                                        var request = new RestRequest("/saci/storageRestServices/addapi/documentos/referencias/" + lGuidDSL, Method.Put);
+                                        request.AddHeader("Content-Type", "application/json");
+                                        var body = "{" +
+                                            "\"data\":[{" +
+                                            "\"applicationtype\":\"Comercial\"," +
+                                            "\"association\":[\"" + lGUIDDocumentoDSL + "\"]," +
+                                            "\"comment\":\"Concepto: " + aDocumento.concepto + " Serie: " + aDocumento.serie + " Folio" + lSiguienteFolio.ToString() + " \"," +
+                                            "\"docapp\":{" +
+                                            "\"cuenta\":\"\"," +
+                                            "\"ejercicio\":0," +
+                                            "\"folio\":\"\"," +
+                                            "\"numero\":0," +
+                                            "\"periodo\":0," +
+                                            "\"responsable\":0," +
+                                            "\"subtipo\":\"\"," +
+                                            "\"subtiponumero\":0," +
+                                            "\"tipo\":\"\"" +
+                                            "}," +
+                                            "\"fecha\":\"" + DateTime.Now.ToString("yyyy-MM-dd") + "\"," +
+                                            "\"guid\":\"" + lGuidDocumentoComercial + "\"," +
+                                            "\"tipodoc\":\"CFDI\"" +
+                                            "}]" +
+                                            "}";
+
+                                        request.AddStringBody(body, DataFormat.Json);
+                                        RestResponse response = client.Execute(request);
+
+                                        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                                        {
+                                            Console.WriteLine("Error de comunicacion REST " + response.ErrorMessage);
+                                        }
+                                        else
+                                        {
+                                            SqlConnections.ActualizarDocumentoComercial(aStringConnection, ref lMensaje, aDocumento, lIdDocumentoComercial, lGUIDDocumentoDSL);
+                                            Log.LogMessage("UUID asociado " + aDocumento.uuid);
+                                        }
+                                    }
+                                }
+                           // }
+                        }
+                    }
+                    else
+                    {
+                        SqlConnections.ActualizarDocumentoComercial(aStringConnection, ref lMensaje, aDocumento, lIdDocumento.ToString(), "");
+                    }
+                }
+
             }
             catch (Exception ex)
             {
-                Log.LogMessage("Excepcion al crear entrada de inventario: " + ex.Message.ToString());
+                Log.LogMessage("Excepcion al crear factura: " + ex.Message.ToString());
                 lError = -1;
                 return lError;
             }
 
             return lError;
         }
-        */
     }
 }

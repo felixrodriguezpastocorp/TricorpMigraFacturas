@@ -9,7 +9,7 @@ namespace TricorpMigraFacturasTask
 {
     class Program
     {
-        static void Main(string[] args) //{sdkUser},{sdkPass},{rutaEmpresaOrigen},{rutaEmpresaDestino},{tbArchivo.Text},{stringconnectionOrigen},{stringconnectionDestino}
+        static void Main(string[] args) //{sdkUser},{sdkPass},{rutaEmpresaOrigen},{rutaEmpresaDestino},{tbArchivo.Text},{stringconnectionOrigen},{stringconnectionDestino},{relacionaADD}
         {
             bool lSdkAbierto = false;
             bool lEmpresaAbierta = false;
@@ -24,7 +24,8 @@ namespace TricorpMigraFacturasTask
             {
                 List<Interfaces.registro> lRegistros = new List<Interfaces.registro>();
                 Dictionary<string, string> lConceptos = new Dictionary<string, string>();
-                lError = mProcesaExcel(valores[4], ref lRegistros, ref lConceptos);
+                Dictionary<string, string> lUnidades = new Dictionary<string, string>();
+                lError = mProcesaExcel(valores[4], ref lRegistros, ref lConceptos, ref lUnidades);
 
                 if (lError != 0)
                 {
@@ -42,143 +43,68 @@ namespace TricorpMigraFacturasTask
                     Log.LogMessage("No se obtuvieron registros del archivo de Excel ");
                     return;
                 }
-                //int lRenglon = 1;
-                //foreach (Interfaces.registro lRegistro in lRegistros)
-                //{
-                //    lRenglon = lRenglon + 1;
-                //    //Producto
-                //    if (string.IsNullOrWhiteSpace(lRegistro.producto))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : Código de producto vacío");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (lRegistro.producto.Length > 30)
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : Longitud de código de producto mayor a 30");
-                //        lErrorRegistros = true;
-                //    }
-                //    else
-                //    {
-                //        lMensaje = "";
-                //        if (SqlConnections.BuscarProducto(valores[4], ref lMensaje, lRegistro.producto) == false)
-                //        {
-                //            Log.LogMessage("Renglon " + lRenglon + " : Error al buscar producto : " + lMensaje);
-                //            lErrorRegistros = true;
-                //        }
-                //    }
+                
+                lError = fsdk.fAbreSDK(valores[0], valores[1]);
+                if (lError != 0)
+                {
+                    Log.LogMessage("Error al abrir el SDK " + Interfaces.RError(lError));
+                    return;
+                }
+                lSdkAbierto = true;
 
-                //    //Almacen
-                //    if (string.IsNullOrWhiteSpace(lRegistro.almacen))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : Código de almacén vacío");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (lRegistro.almacen.Length > 30)
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : Longitud de código de almacén mayor a 30");
-                //        lErrorRegistros = true;
-                //    }
-                //    else
-                //    {
-                //        lMensaje = "";
-                //        if (SqlConnections.BuscarAlmacen(valores[4], ref lMensaje, lRegistro.almacen) == false)
-                //        {
-                //            Log.LogMessage("Renglon " + lRenglon + " : Error al buscar almacen : " + lMensaje);
-                //            lErrorRegistros = true;
-                //        }
-                //    }
+                lError = fsdk.fAbreEmpresa(valores[3]);
+                if (lError != 0)
+                {
+                    Log.LogMessage("Error al abrir la empresa " + Interfaces.RError(lError));
+                    return;
+                }
 
-                //    double cantidad = 0.00;
+                lEmpresaAbierta = true;
 
-                //    //Cantidad
-                //    if (string.IsNullOrWhiteSpace(lRegistro.cantidad))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : La cantidad está vacía");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (!double.TryParse(lRegistro.cantidad, out cantidad))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : El valor " + lRegistro.cantidad + " para la cantidad no es un valor numérico ");
-                //        lErrorRegistros = true;
-                //    }
-                //    // Costo
-                //    double costo = 0.00;
-                //    if (string.IsNullOrWhiteSpace(lRegistro.costo))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : El costo está vacío");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (!double.TryParse(lRegistro.costo, out costo))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : El valor " + lRegistro.costo + " para el costo no es un valor numérico ");
-                //        lErrorRegistros = true;
-                //    }
+                
+                int lRenglon = 0;
+                lMensaje = "";
 
-                //    // Lote
-                //    if (string.IsNullOrWhiteSpace(lRegistro.lote))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : El lote está vacío");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (lRegistro.lote.Length > 30)
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : Longitud del lote mayor a 30");
-                //        lErrorRegistros = true;
-                //    }
+                foreach (Interfaces.registro lRegistro in lRegistros)
+                {
+                    lRenglon = lRenglon + 1;
+                 
+                    Log.LogMessage("Procesando renglón " + lRenglon + " Concepto: " + lRegistro.conceptoorigen + " Serie: " + lRegistro.serie + " Folio: " + lRegistro.folio);
+                    Interfaces.documento lDocumento = new Interfaces.documento();
+                    if (SqlConnections.BuscarDocumento(valores[5], ref lMensaje, ref lDocumento, lRegistro.conceptoorigen, lRegistro.serie, lRegistro.folio) == false  )
+                    {
+                        Log.LogMessage("Error al buscar Documento " + lMensaje);
+                        continue;
+                    }
 
-                //    // Fabricacion
-                //    DateTime fabricacion = new DateTime();
-                //    if (string.IsNullOrWhiteSpace(lRegistro.fabricacion))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : La fecha de fabricación está vacía");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (!DateTime.TryParse(lRegistro.fabricacion, out fabricacion))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : El valor " + lRegistro.fabricacion + " para la fecha de fabricacion no es un valor de fecha ");
-                //        lErrorRegistros = true;
-                //    }
+                    if (lConceptos.ContainsKey(lRegistro.conceptoorigen))
+                    {
+                        lDocumento.concepto = lConceptos[lRegistro.conceptoorigen];
+                        lDocumento.serie = lRegistro.serie;
+                    }
+                    else
+                    {
+                        Log.LogMessage("El concepto " + lRegistro.conceptoorigen + " no existe en la lista de conceptos en el Excel");
+                        continue;
+                    }
 
-                //    // Vencimiento
-                //    DateTime caducidad = new DateTime();
-                //    if (string.IsNullOrWhiteSpace(lRegistro.caducidad))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : La fecha de vencimiento está vacía");
-                //        lErrorRegistros = true;
-                //    }
-                //    else if (!DateTime.TryParse(lRegistro.caducidad, out caducidad))
-                //    {
-                //        Log.LogMessage("Renglon " + lRenglon + " : El valor " + lRegistro.caducidad + " para la fecha de vencimiento no es un valor de fecha ");
-                //        lErrorRegistros = true;
-                //    }
-                //}
+                    List<Interfaces.movimiento> lMovimientos = new List<Interfaces.movimiento>();
+                    lMensaje = "";
+                    if (SqlConnections.BuscarMovimientos(valores[5], ref lMensaje, ref lMovimientos, lDocumento.iddocumento) == false)
+                    {
+                        Log.LogMessage("Error al buscar Movimientos " + lMensaje);
+                        continue;
+                    }
 
-                //if (lErrorRegistros)
-                //{
-                //    return;
-                //}
+                    if (lMovimientos.Count > 0)
+                    {
+                        lDocumento.movimientos = lMovimientos;
+                    }
 
-                //lError = fsdk.fAbreSDK(valores[0], valores[1]);
-                //if (lError != 0)
-                //{
-                //    Log.LogMessage("Error al abrir el SDK " + Interfaces.RError(lError));
-                //    return;
-                //}
-                //lSdkAbierto = true;
+                    lError = fsdk.fCreaDocumento(lDocumento, lUnidades, valores[6], valores[7], valores[8], valores[9], valores[10]);
 
-                //lError = fsdk.fAbreEmpresa(valores[2]);
-                //if (lError != 0)
-                //{
-                //    Log.LogMessage("Error al abrir la empresa " + Interfaces.RError(lError));
-                //    return;
-                //}
-
-                //lEmpresaAbierta = true;
-
-                ////Crear documento entrada
-                //lError = fsdk.fCreaEntrada(lRegistros, valores[5]);
-
-            }
+                }               
+                            }
             catch (Exception ex)
             {
                 Log.LogMessage("Excepcion al realizar el proceso :" + ex.Message.ToString());
@@ -190,7 +116,7 @@ namespace TricorpMigraFacturasTask
             }
         }
 
-        static int mProcesaExcel(string aArchivo, ref List<Interfaces.registro> aListaRegistros, ref Dictionary<string,string> aConceptos)
+        static int mProcesaExcel(string aArchivo, ref List<Interfaces.registro> aListaRegistros, ref Dictionary<string,string> aConceptos, ref Dictionary<string, string> aUnidades)
         {
             int lResult = 0;
             try
@@ -208,6 +134,11 @@ namespace TricorpMigraFacturasTask
                     Log.LogMessage("El archivo de Excel no contiene la hoja CONCEPTOS");
                     lResult = -1;
                 }
+                else if (!workBook.Worksheets.Contains("UNIDADES"))
+                {
+                    Log.LogMessage("El archivo de Excel no contiene la hoja UNIDADES");
+                    lResult = -1;
+                }
 
                 if (lResult == 0)
                 {
@@ -217,12 +148,12 @@ namespace TricorpMigraFacturasTask
 
                     if (cols.Count() > 3)
                     {
-                        Log.LogMessage("El archivo de Excel tiene mas de 3 columnas");
+                        Log.LogMessage("El archivo de Excel tiene mas de 3 columnas en la hoja MIGRACION");
                         lResult = -1;
                     }
                     else if (cols.Count() < 3)
                     {
-                        Log.LogMessage("El archivo de Excel tiene menos de 3 columnas");
+                        Log.LogMessage("El archivo de Excel tiene menos de 3 columnas en la hoja MIGRACION");
                         lResult = -1;
                     }
 
@@ -250,12 +181,12 @@ namespace TricorpMigraFacturasTask
 
                     if (cols2.Count() > 3)
                     {
-                        Log.LogMessage("El archivo de Excel tiene mas de 3 columnas");
+                        Log.LogMessage("El archivo de Excel tiene mas de 3 columnas en la hoja CONCEPTOS");
                         lResult = -1;
                     }
                     else if (cols2.Count() < 3)
                     {
-                        Log.LogMessage("El archivo de Excel tiene menos de 3 columnas");
+                        Log.LogMessage("El archivo de Excel tiene menos de 3 columnas en la hoja CONCEPTOS");
                         lResult = -1;
                     }
 
@@ -269,6 +200,38 @@ namespace TricorpMigraFacturasTask
                             if (!aConceptos.ContainsKey(lConceptoOrigen))
                             {
                                 aConceptos.Add(lConceptoOrigen, lConceptoDestino);
+                            }
+                        }
+                    }
+
+                    if (lResult == 0)
+                    {
+                        var ws3 = workBook.Worksheet("UNIDADES");
+                        var rows3 = ws3.RangeUsed().RowsUsed().Skip(1);
+                        var cols3 = ws3.RangeUsed().ColumnsUsed();
+
+                        if (cols3.Count() > 2)
+                        {
+                            Log.LogMessage("El archivo de Excel tiene mas de 2 columnas en la hoja UNIDADES");
+                            lResult = -1;
+                        }
+                        else if (cols3.Count() < 2)
+                        {
+                            Log.LogMessage("El archivo de Excel tiene menos de 2 columnas en la hoja UNIDADES");
+                            lResult = -1;
+                        }
+
+                        if (lResult == 0)
+                        {
+                            foreach (var row in rows3)
+                            {
+                                string lUnidadOrigen = row.Cell(1).GetValue<string>().Trim();
+                                string lUnidadDestino = row.Cell(2).GetValue<string>().Trim();
+
+                                if (!aUnidades.ContainsKey(lUnidadOrigen))
+                                {
+                                    aUnidades.Add(lUnidadOrigen, lUnidadDestino);
+                                }
                             }
                         }
                     }

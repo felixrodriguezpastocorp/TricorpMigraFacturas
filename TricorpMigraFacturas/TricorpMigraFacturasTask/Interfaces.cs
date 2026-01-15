@@ -16,6 +16,45 @@ namespace TricorpMigraFacturasTask
             public string folio { get; set; }
         }
 
+        public class documento
+        {
+            public string iddocumento { get; set; }
+            public string concepto { get; set; }
+            public string serie { get; set; }
+            public string moneda { get; set; }
+            public string tc { get; set; }
+            public string descuentodoc1 { get; set; }
+            public string descuentodoc2 { get; set; }
+            public string cliente { get; set; }
+            public string referencia { get; set; }
+            public string gasto1 { get; set; }
+            public string gasto2 { get; set; }
+            public string gasto3 { get; set; }
+            public string observaciones { get; set; }
+            public string uuid { get; set; }
+            public List<Interfaces.movimiento> movimientos { get; set; }
+        }
+
+        public class movimiento
+        {
+            public string unidades { get; set; }
+            public string unidad { get; set; }
+            public string precio { get; set; }
+            public string porcimp1 { get; set; }
+            public string porcimp2 { get; set; }
+            public string porcimp3 { get; set; }
+            public string porcret1 { get; set; }
+            public string porcret2 { get; set; }
+            public string porcdes1 { get; set; }
+            public string porcdes2 { get; set; }
+            public string porcdes3 { get; set; }
+            public string porcdes4 { get; set; }
+            public string porcdes5 { get; set; }
+            public string referencia { get; set; }
+            public string observacioens { get; set; }
+        }
+
+
         public class constantes
         {
             public const int kLongitudNomBanExtranjero = 255;
@@ -153,13 +192,31 @@ namespace TricorpMigraFacturasTask
         public static extern Int32 fBorraDocumento();
 
         [DllImport("MGWServicios.dll")]
+        public static extern Int32 fEditarDocumento();
+
+        [DllImport("MGWServicios.dll")]
+        public static extern Int32 fGuardaDocumento();
+
+        [DllImport("MGWServicios.dll")]
         public static extern Int32 fBuscarIdDocumento(int aIdDocumento);
 
         [DllImport("MGWServicios.dll")]
         public static extern Int32 fDesbloqueaDocumento();
 
         [DllImport("MGWServicios.dll")]
+        public static extern Int32 fSetDatoDocumento([MarshalAs(UnmanagedType.LPStr)] string aCampo, [MarshalAs(UnmanagedType.LPStr)] string aValor);
+
+        [DllImport("MGWServicios.dll")]
         public static extern Int32 fAltaMovimiento(Int32 aIdDocumento, ref Int32 aIdMovimiento, ref tMovimiento astMovimiento);
+
+        [DllImport("MGWServicios.dll")]
+        public static extern Int32 fEditarMovimiento();
+
+        [DllImport("MGWServicios.dll")]
+        public static extern Int32 fGuardaMovimiento();
+
+        [DllImport("MGWServicios.dll")]
+        public static extern Int32 fSetDatoMovimiento([MarshalAs(UnmanagedType.LPStr)] string aCampo, [MarshalAs(UnmanagedType.LPStr)] string aValor);
 
         [DllImport("MGWServicios.dll")]
         public static extern Int32 fSiguienteFolio([MarshalAs(UnmanagedType.LPStr)] string aCodigoConcepto, [MarshalAs(UnmanagedType.LPStr)] string aSerie, ref double aFolio);

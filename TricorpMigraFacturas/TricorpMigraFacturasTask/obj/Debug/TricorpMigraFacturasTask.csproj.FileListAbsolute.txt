@@ -6,3 +6,4 @@ D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFa
 D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.csproj.CopyComplete
 D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.exe
 D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.pdb
+D:\Jorge Farre\Tricorp\TricorpMigrarFacturas\TricorpMigraFacturas\TricorpMigraFacturas\TricorpMigraFacturasTask\obj\Debug\TricorpMigraFacturasTask.exe.config
